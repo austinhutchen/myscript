@@ -1,5 +1,7 @@
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
+
+#define INT_MAX pow(2, 32) - 1
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 SoftwareSerial mySerial(2, 3);
@@ -24,11 +26,11 @@ void loop() {
   // print the number of seconds since reset:
   usr->refresh();
   lcd.setCursor(0, 0);
-  if (usr->func() != "-1") {
-    lcd.print(usr->func());
+  auto t = usr->func();
+  if (t != INT_MAX) {
+    lcd.print(t);
   } else {
-       lcd.print("ERR");
-
+    lcd.print("ERR");
   }
   lcd.setCursor(0, 1);
   lcd.print(millis() / 1000);
