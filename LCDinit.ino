@@ -1,5 +1,5 @@
-//www.elegoo.com
-//2016.12.9
+// www.elegoo.com
+// 2016.12.9
 
 /*
   LiquidCrystal Library - Hello World
@@ -12,13 +12,13 @@
  This sketch prints "Hello World!" to the LCD
  and shows the time.
 
-  The circuit:32468754yy                                                   
+  The circuit:32468754yy
  * LCD RS pin to digital pin 7
  * LCD Enable pin to digital pin 8
  * LCD D4 pin to digital pin 9
  * LCD D5 pin to digital pin 10
  * LCD D6 pin to digital pin 11
- * LCD D7 pin to digital pin 12          
+ * LCD D7 pin to digital pin 12
  * LCD R/W pin to ground
  * LCD VSS pin to ground
  * LCD VCC pin to 5V
@@ -50,14 +50,23 @@ void setup() {
   lcd.begin(16, 2);
   lcd.clear();
   // Print a message to the LCD.
-   lcd.setCursor(0, 0);
+  lcd.setCursor(0, 0);
   lcd.print("Hello, World!");
 }
 
 void loop() {
+  int tempReading = analogRead(tempPin);
+  double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
+  tempK = 1 / (0.001129148 +
+               (0.000234125 + (0.0000000876741 * tempK * tempK)) * tempK);
+  float tempC = tempK - 273.15;
+  float tempF = (tempC * 9.0) / 5.0 + 32.0;
   // set the cursor to column 0, line 1
   // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
+  lcd.setCursor(0, 0);
+  lcd.print("Temp C ");
+  lcd.setCursor(6, 0);
+  lcd.print(tempF);
   // print the number of seconds since reset:
   lcd.print(millis() / 1000);
 }
