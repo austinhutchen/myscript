@@ -1,9 +1,9 @@
 
+#include "./BITS.c"
 #include "IRremote.h"
 #include "Stepper.h"
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-#include "./BITS.c"
 /*----- Variables, Pins -----*/
 #define STEPS 32  // Number of steps per revolution of Internal shaft
 int Steps2Take;   // 2048 = 1 Revolution
@@ -70,32 +70,30 @@ void setup() {
 }
 
 void loop() {
-  if (irrecv.decode(&results)) // have we received an IR signal?
-  {
-    switch (results.value)
-    {
-    case 0xFFA857:                 // VOL+ button pressed
-      small_stepper.setSpeed(500); // Max seems to be 500
-      Steps2Take = 2048;           // Rotate CW
-      small_stepper.step(Steps2Take);
-      delay(2000);
-      break;
-    case 0xFF629D: // VOL- button pressed
-      small_stepper.setSpeed(500);
-      Steps2Take = -2048; // Rotate CCW
-      small_stepper.step(Steps2Take);
-      delay(2000);
-      break;
-    }
-
-    irrecv.resume(); // receive the next value
-    digitalWrite(8, LOW);
-    digitalWrite(9, LOW);
-    digitalWrite(10, LOW);
-    digitalWrite(11, LOW);
-  }
   if (mySerial.isListening()) {
     // print the number of seconds since reset:
+    if (irrecv.decode(&results)) // have we received an IR signal?
+    {
+      switch (results.value) {
+      case 0xFFA857:                 // VOL+ button pressed
+        small_stepper.setSpeed(500); // Max seems to be 500
+        Steps2Take = 2048;           // Rotate CW
+        small_stepper.step(Steps2Take);
+        delay(2000);
+        break;
+      case 0xFF629D: // VOL- button pressed
+        small_stepper.setSpeed(500);
+        Steps2Take = -2048; // Rotate CCW
+        small_stepper.step(Steps2Take);
+        delay(2000);
+        break;
+      }
+      irrecv.resume(); // receive the next value
+      digitalWrite(8, LOW);
+      digitalWrite(9, LOW);
+      digitalWrite(10, LOW);
+      digitalWrite(11, LOW);
+    }
     usr->refresh();
     lcd.setCursor(0, 0);
     unsigned char t = usr->getbuf();
@@ -111,7 +109,6 @@ void loop() {
     lcd.print(leftBitCount(t));
     delay(100);
     lcd.clear();
-
   } else {
     delete usr;
     usr = 0x0;
