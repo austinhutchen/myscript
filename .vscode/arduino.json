@@ -1,5 +1,5 @@
 {
     "port": "/dev/tty.usbmodem11301",
     "board": "arduino:avr:uno",
-    "sketch": "LCDinit.ino"
+    "sketch": "reciever/reciever.ino"
 }
