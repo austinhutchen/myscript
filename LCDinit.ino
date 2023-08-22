@@ -12,7 +12,8 @@ void setup() {
 void loop() {
   // print the number of seconds since reset:
   lcd.setCursor(0, 0);
-  lcd.print(mySerial.read());
+  char** buffer = mySerial.read();
+  lcd.print(buffer);
   lcd.setCursor(0, 1);
   lcd.print(millis() / 100);
   delay(100);
