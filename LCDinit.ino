@@ -24,7 +24,12 @@ void loop() {
   // print the number of seconds since reset:
   usr->refresh();
   lcd.setCursor(0, 0);
-  lcd.print(usr->func());
+  if (usr->func() != "-1") {
+    lcd.print(usr->func());
+  } else {
+       lcd.print("ERR");
+
+  }
   lcd.setCursor(0, 1);
   lcd.print(millis() / 1000);
   delay(100);
