@@ -70,7 +70,7 @@ void setup() {
 }
 
 void loop() {
-  if (mySerial.isListening()) {
+  while (mySerial.isListening()) {
     // print the number of seconds since reset:
     if (irrecv.decode(&results)) // have we received an IR signal?
     {
@@ -109,11 +109,9 @@ void loop() {
     lcd.print(leftBitCount(t));
     delay(100);
     lcd.clear();
-  } else {
+  } 
     delete usr;
     usr = 0x0;
     return;
-  }
-
-  // usr need to be deallocated
+  
 }
