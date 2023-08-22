@@ -1,18 +1,24 @@
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
 #define INT_MAX pow(2, 32) - 1
-#define ulong unsigned long
 // initialize the library with the numbers of the interface pins11
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 const byte rxPin = 2;
 const byte txPin = 3;
 SoftwareSerial mySerial(rxPin, txPin);
-
+char array[8];
+typedef char *iterator;
+iterator array_begin(char a[]) { return &a[0]; }
+iterator array_end(char a[], int n) { return &a[n]; }
+iterator array_next(iterator i) { return ++i; }
 struct user {
   char buf;
   char **str;
   int size;
-  user() { buf = size = str = 0x0; }
+  user() {
+    buf = size = 0;
+    str = 0x0;
+  }
   char getbuf() {
     str += buf;
     this->size += 1;
@@ -21,14 +27,17 @@ struct user {
   void refresh() { buf = mySerial.read(); }
   void prnt() {
     int i = 0;
-    while (i < 8 && i != this->size) {
-      lcd.print(this->str[i]);
-      lcd.setCursor(0, i);
+    iterator it = array_begin(*this->str);
+    iterator end = array_end(*this->str, 7);
+    for (; it != end && i < 8; it = array_next(it)) {
+      lcd.print(*it);
+      lcd.setCursor(i, 0);
       i++;
-      delay(200);
+      delay(100);
     }
   }
 };
+
 user *usr = new user();
 
 void setup() {
