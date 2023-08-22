@@ -1,5 +1,6 @@
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
+#include "./BITS.c"
 #define UCHAR_MAX pow(2, 8) - 1
 // initialize the library with the numbers of the interface pins11
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
@@ -61,10 +62,13 @@ void loop() {
     if (t != UCHAR_MAX) {
       usr->prnt();
     } else {
-      lcd.print("ERR: RX&&TX BAD_ACCESS");
+      lcd.print("<ERR>RX&TX RFAIL");
     }
     lcd.setCursor(0, 1);
     lcd.print(millis() / 1000);
+    lcd.setCursor(8,1);
+    // bits in current read buffer
+    lcd.print(leftBitCount(t));
     delay(100);
     lcd.clear();
 
