@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-#define INT_MAX pow(2, 32) - 1
+#define UCHAR_MAX pow(2, 8) - 1
 // initialize the library with the numbers of the interface pins11
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 const byte rxPin = 2;
@@ -30,7 +30,7 @@ struct user {
     int i = 0;
     iterator it = array_begin(*this->str);
     iterator end = array_end(*this->str, 15);
-    for (; it != end ; it = array_next(it)) {
+    for (; it != end; it = array_next(it)) {
       lcd.print(*it);
       lcd.setCursor(i, 0);
       i++;
@@ -57,8 +57,8 @@ void loop() {
     // print the number of seconds since reset:
     usr->refresh();
     lcd.setCursor(0, 0);
-    char t = usr->getbuf();
-    if (t != WCHAR_MAX) {
+    unsigned char t = usr->getbuf();
+    if (t != UCHAR_MAX) {
       usr->prnt();
     } else {
       lcd.print("ERR");
