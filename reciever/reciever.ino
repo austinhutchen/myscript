@@ -13,14 +13,14 @@ int receiver = 5; // Signal Pin of IR receiver to Arduino Digital Pin 6
 // Setup of proper sequencing for Motor Driver Pins
 // In1, In2, In3, In4 in the sequence 1-3-2-4
 
-Stepper small_stepper(STEPS, 0, 1, 4, 6);
+Stepper small_stepper(STEPS, 2, 3, 4, 6);
 IRrecv irrecv(receiver); // create instance of 'irrecv'
 decode_results results;  // create instance of 'decode_results'
 #define UCHAR_MAX pow(2, 8) - 1
 // initialize the library with the numbers of the interface pins11
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
-const byte rxPin = 2;
-const byte txPin = 3;
+const byte rxPin = 0;
+const byte txPin = 1;
 SoftwareSerial mySerial(rxPin, txPin);
 char array[8];
 typedef char *iterator;
