@@ -4,6 +4,9 @@
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 SoftwareSerial mySerial(2, 3);
 void setup() {
+  mySerial.begin(9600); // Setting the baud rate of Software Serial Library
+  Serial.begin(9600);   // Setting the baud rate of Serial Monitor
+  Serial.println("starting up...");
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
@@ -12,10 +15,10 @@ void setup() {
 void loop() {
   // print the number of seconds since reset:
   lcd.setCursor(0, 0);
-  char** buffer = mySerial.read();
-  lcd.print(buffer);
+  auto buf = mySerial.read();
+  lcd.print(buf);
   lcd.setCursor(0, 1);
-  lcd.print(millis() / 100);
+  lcd.print(millis() / 1000);
   delay(100);
   lcd.clear();
 }
