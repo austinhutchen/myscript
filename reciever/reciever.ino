@@ -40,16 +40,16 @@ struct user {
     this->index++;
     return buf;
   }
-  
+
   ushort getindex() { return this->index; }
-  void wrap() {
+  void wrapindex() {
     if (this->index == 15) {
       this->index = 0;
     }
     return;
   }
-  void refresh() { buf = mySerial.read(); }
-  void prnt() {
+  void refreshbuffer() { buf = mySerial.read(); }
+  void prntstr() {
     int i = 0;
     iterator it = array_begin(this->str);
     iterator end = array_end(this->str, 15);
@@ -96,25 +96,25 @@ void loop() {
       case 0xFF629D: // VOL- button pressed
         lcd.print("EXITING...");
         delay(1000);
+        delete usr;
+        usr = 0x0;
         return;
       }
       irrecv.resume(); // receive the next value
     }
-    usr->refresh();
+    usr->refreshbuffer();
     lcd.setCursor(0, 0);
     unsigned char t = usr->getbuf();
     if (t != UCHAR_MAX) {
       lcd.clear();
-      usr->prnt();
+      usr->prntstr();
       delay(300);
     } else {
+      lcd.clear();
       lcd.print("<ERR>RX&TX RFAIL");
       delay(300);
     }
-    usr->wrap();
+    usr->wrapindex();
     lcd.clear();
   }
-  delete usr;
-  usr = 0x0;
-  return;
 }
