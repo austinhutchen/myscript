@@ -81,24 +81,15 @@ void loop() {
     if (irrecv.decode(&results)) // have we received an IR signal?
     {
       switch (results.value) {
-      case 0xFFA857:                 // VOL+ button pressed
-        small_stepper.setSpeed(500); // Max seems to be 500
-        Steps2Take = 2048;           // Rotate CW
-        small_stepper.step(Steps2Take);
-        delay(2000);
-        break;
+      case 0xFFA857:  
+        lcd.print("Hello!");// VOL+ button pressed
+        delay(1000);
       case 0xFF629D: // VOL- button pressed
-        small_stepper.setSpeed(500);
-        Steps2Take = -2048; // Rotate CCW
-        small_stepper.step(Steps2Take);
-        delay(2000);
-        break;
+        lcd.print("EXITING...");
+        delay(1000);
+        return;
       }
       irrecv.resume(); // receive the next value
-      digitalWrite(8, LOW);
-      digitalWrite(9, LOW);
-      digitalWrite(10, LOW);
-      digitalWrite(11, LOW);
     }
     usr->refresh();
     lcd.setCursor(0, 0);
