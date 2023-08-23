@@ -14,8 +14,8 @@ int receiver = 5; // Signal Pin of IR receiver to Arduino Digital Pin 6
 // Setup of proper sequencing for Motor Driver Pins
 // In1, In2, In3, In4 in the sequence 1-3-2-4
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
-const byte rxPin = 0;
-const byte txPin = 1;
+const byte rxPin = 2;
+const byte txPin = 3;
 SoftwareSerial mySerial(rxPin, txPin);
 char array[8];
 typedef char *iterator;
