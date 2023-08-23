@@ -87,26 +87,30 @@ void setup() {
   lcd.clear();
 }
 
-void loop() {
-  while (mySerial.isListening()) {
-    // print the number of seconds since reset:
-    if (irrecv.decode(&results)) // have we received an IR signal?
-    {
-      switch (results.value) {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-      case 0xFFA857:
-        lcd.print("Hello!"); // VOL+ button pressed
-        delay(1000);
-      case 0xFF629D: // VOL- button pressed
-        lcd.print("EXITING...");
-        delay(1000);
-        delete usr;
-        usr = 0x0;
-        return;
-      }
-      irrecv.resume(); // receive the next value
+short handleir(decode_results results) {
+  if (irrecv.decode(&results)) // have we received an IR signal?
+  {
+    switch (results.value) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+    case 0xFF629D:
+      lcd.print("Hello!"); // VOL+ button pressed
+      delay(1000);
+      return 1;
+    case 0xFFA857: // VOL- button pressed
+      lcd.print("<SIGKILL..>");
+      delete usr;
+      usr = 0x0;
+      delay(500);
+      lcd.clear();
+      return -1;
     }
+  }
+}
+void loop() {
+  while (mySerial.isListening() && handleir(results) != -1) {
+    // print the number of seconds since reset:
+    irrecv.resume(); // receive the next value
     usr->refreshbuffer();
     lcd.setCursor(0, 0);
     unsigned char t = usr->getbuf();
@@ -124,4 +128,5 @@ void loop() {
     usr->wrapindex();
     lcd.clear();
   }
+  exit(0);
 }
