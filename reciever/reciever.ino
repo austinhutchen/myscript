@@ -31,14 +31,12 @@ iterator array_next(iterator i) { return ++i; }
 struct user {
   char buf;
   char *str;
-  int size;
   user() {
-    buf = size = 0;
+    buf = 0;
     str = 0x0;
   }
   char getbuf() {
     str += buf;
-    this->size += 1;
     return buf;
   }
   void refresh() { buf = mySerial.read(); }
@@ -51,99 +49,15 @@ struct user {
       lcd.setCursor(i, 0);
       i++;
     }
+    lcd.setCursor(8, 1);
+    lcd.print(leftBitCount(this->str));
+    delay(100);
+    lcd.setCursor(0, 1);
+    lcd.print(millis() / 1000);
     delay(200);
   }
 };
-void reverseString(string &s) {
-  // ptr swap at beginning and end;
-  char *beg = &s[0];
-  char *last = &s[s.size() - 1];
-  for (; beg < last && last != &s[0]; beg++ && last--) {
-    swap(beg, last);
-  }
-}
 
-vector<bitset<8>> strbit(string &myString, uint &max) {
-  max = myString.size();
-  vector<bitset<8>> ret;
-  for (std::size_t i = 0; i < myString.size(); ++i) {
-    ret.push_back(bitset<8>(myString[i]));
-  }
-  return ret;
-}
-
-uint b2hx(vector<bitset<8>> input, uint &size) {
-  long int binaryval, hexadecimalval = 0, i = 1, remainder;
-  int k = 0;
-  while (k < size) {
-    remainder = binaryval % 10;
-    hexadecimalval = hexadecimalval + remainder * i;
-    i = i * 2;
-    binaryval = binaryval / 10;
-    k++;
-  }
-  return hexadecimalval;
-}
-
-vector<bitset<8>> encrypt(string &input, unsigned int &hx) {
-  // cypher algorithm
-  reverseString(input);
-  char c;
-  std::bitset<8> mask(INT_MAX);
-  unsigned long i;
-  uint max;
-  vector<bitset<8>> vect = strbit(input, max);
-  for (int i = 0; i < vect.size(); i++) {
-    // take one's complement
-    // XOR is bijective mapping, allowing reverse-engineer of decryption string
-    vect[i] = ~vect[i] ^ mask;
-    vect[i] = vect[i] << 2 | vect[i] >> (6);
-  }
-  hx = b2hx(vect, max);
-  return vect;
-}
-
-vector<bitset<8>> load() {
-  ifstream in;
-  in.open("./txt/in.txt");
-  string line;
-  string file;
-  uint hx;
-  while (getline(in, line)) {
-    file += line + ' ';
-  }
-  return encrypt(file, hx);
-}
-
-void print(vector<bitset<8>> vect) {
-  ofstream fout;
-  fout.open("./txt/out.txt");
-  for (int i = 0; i < vect.size(); i++) {
-    fout << vect[i] << endl;
-  }
-  fout.close();
-}
-
-string decrypt(vector<bitset<8>> vect) {
-  char c;
-  string output;
-  int x;
-  std::bitset<8> mask(INT_MAX);
-#pragma omp parallel for
-  for (int i = 0; i < vect.size(); i++) {
-    vect[i] = ~vect[i] ^ mask;
-    vect[i] = vect[i] >> 2 | vect[i] << (6);
-    x = vect[i].to_ulong();
-    if (x <= CHAR_MAX) {
-      c = static_cast<char>(x);
-      output += c;
-    } else {
-      output += ' ';
-    }
-  }
-  reverseString(output);
-  return output;
-}
 user *usr = new user();
 
 void setup() {
@@ -153,9 +67,12 @@ void setup() {
   mySerial.begin(9600); // Setting the baud rate of Software Serial Library
   Serial.begin(9600);   // Setting the baud rate of Serial Monitor
   Serial.println("starting up...");
+  lcd.print("starting up...");
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
+  delay(150);
+  lcd.clear();
 }
 
 void loop() {
@@ -188,15 +105,11 @@ void loop() {
     unsigned char t = usr->getbuf();
     if (t != UCHAR_MAX) {
       usr->prnt();
+      delay(300);
     } else {
       lcd.print("<ERR>RX&TX RFAIL");
+      delay(300);
     }
-    lcd.setCursor(0, 1);
-    lcd.print(millis() / 1000);
-    lcd.setCursor(8, 1);
-    // bits in current read buffer
-    lcd.print(leftBitCount(t));
-    delay(100);
     lcd.clear();
   }
   delete usr;
