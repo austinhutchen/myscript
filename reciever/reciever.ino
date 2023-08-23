@@ -30,7 +30,7 @@ iterator array_next(iterator i) { return ++i; }
 
 struct user {
   char buf;
-  char **str;
+  char *str;
   int size;
   user() {
     buf = size = 0;
@@ -44,14 +44,14 @@ struct user {
   void refresh() { buf = mySerial.read(); }
   void prnt() {
     int i = 0;
-    iterator it = array_begin(*this->str);
-    iterator end = array_end(*this->str, 15);
+    iterator it = array_begin(this->str);
+    iterator end = array_end(this->str, 15);
     for (; it != end; it = array_next(it)) {
       lcd.print(*it);
       lcd.setCursor(i, 0);
       i++;
-      delay(100);
     }
+    delay(200);
   }
 };
 
@@ -109,9 +109,8 @@ void loop() {
     lcd.print(leftBitCount(t));
     delay(100);
     lcd.clear();
-  } 
-    delete usr;
-    usr = 0x0;
-    return;
-  
+  }
+  delete usr;
+  usr = 0x0;
+  return;
 }
