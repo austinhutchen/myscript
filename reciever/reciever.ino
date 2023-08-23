@@ -31,9 +31,12 @@ struct user {
   char buf;
   char str[16];
   ushort index;
+  // line will be used to switch between the two display rows
+  bool row;
   user() {
     buf = 0;
     index = 0;
+    row = false;
   }
   char getbuf() {
     str[index] = buf;
@@ -90,6 +93,8 @@ void loop() {
     if (irrecv.decode(&results)) // have we received an IR signal?
     {
       switch (results.value) {
+        lcd.clear();
+        lcd.setCursor(0, 0);
       case 0xFFA857:
         lcd.print("Hello!"); // VOL+ button pressed
         delay(1000);
@@ -111,7 +116,9 @@ void loop() {
       delay(300);
     } else {
       lcd.clear();
-      lcd.print("<ERR>RX&TX RFAIL");
+      lcd.print("<0x0> Awaiting..");
+      lcd.setCursor(0, 1);
+      lcd.print("!enter input!");
       delay(300);
     }
     usr->wrapindex();
