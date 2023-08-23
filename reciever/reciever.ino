@@ -116,7 +116,7 @@ void loop() {
       delay(300);
     } else {
       lcd.clear();
-      lcd.print("<0x0> Awaiting..");
+      lcd.print("<0xff> Awaiting..");
       lcd.setCursor(0, 1);
       lcd.print("!enter input!");
       delay(300);
