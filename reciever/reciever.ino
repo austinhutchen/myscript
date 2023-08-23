@@ -40,7 +40,8 @@ struct user {
     this->index++;
     return buf;
   }
-
+  
+  ushort getindex() { return this->index; }
   void wrap() {
     if (this->index == 15) {
       this->index = 0;
