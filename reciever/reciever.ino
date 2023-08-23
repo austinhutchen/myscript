@@ -8,7 +8,7 @@
 #define STEPS 32  // Number of steps per revolution of Internal shaft
 int Steps2Take;   // 2048 = 1 Revolution
 int receiver = 5; // Signal Pin of IR receiver to Arduino Digital Pin 6
-
+#define ushort unsigned short
 /*-----( Declare objects )-----*/
 // Setup of proper sequencing for Motor Driver Pins
 // In1, In2, In3, In4 in the sequence 1-3-2-4
@@ -30,14 +30,24 @@ iterator array_next(iterator i) { return ++i; }
 
 struct user {
   char buf;
-  char *str;
+  char str[16];
+  ushort index;
   user() {
     buf = 0;
-    str = 0x0;
+    index = 0;
   }
   char getbuf() {
-    str += buf;
+    str[index] = buf;
+    this->index++;
     return buf;
+  }
+
+  void wrap(){
+    if(this->index==15){
+    this->index=0;
+    }
+      return;
+    
   }
   void refresh() { buf = mySerial.read(); }
   void prnt() {
@@ -45,7 +55,7 @@ struct user {
     iterator it = array_begin(this->str);
     iterator end = array_end(this->str, 15);
     for (; it != end; it = array_next(it)) {
-      lcd.print(*it);
+      lcd.print(String(*it));
       lcd.setCursor(i, 0);
       i++;
     }
@@ -81,8 +91,8 @@ void loop() {
     if (irrecv.decode(&results)) // have we received an IR signal?
     {
       switch (results.value) {
-      case 0xFFA857:  
-        lcd.print("Hello!");// VOL+ button pressed
+      case 0xFFA857:
+        lcd.print("Hello!"); // VOL+ button pressed
         delay(1000);
       case 0xFF629D: // VOL- button pressed
         lcd.print("EXITING...");
@@ -95,12 +105,14 @@ void loop() {
     lcd.setCursor(0, 0);
     unsigned char t = usr->getbuf();
     if (t != UCHAR_MAX) {
+      lcd.clear();
       usr->prnt();
       delay(300);
     } else {
       lcd.print("<ERR>RX&TX RFAIL");
       delay(300);
     }
+    usr->wrap();
     lcd.clear();
   }
   delete usr;
