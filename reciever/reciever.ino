@@ -38,21 +38,20 @@ struct user {
     index = 0;
     row = false;
   }
-  char getbuf() {
-    str[index] = buf;
-    this->index++;
-    return buf;
-  }
 
   ushort getindex() { return this->index; }
-  void wrapindex() {
+
+  char refreshbuffer() {
+    buf = mySerial.read();
+    str[index] = buf;
     if (this->index == 15) {
       this->index = 0;
     }
-    return;
+    this->index++;
+    return buf;
   }
-  void refreshbuffer() { buf = mySerial.read(); }
   void prntstr() {
+    // prints a column of our array
     int i = 0;
     iterator it = array_begin(this->str);
     iterator end = array_end(this->str, 15);
@@ -63,12 +62,108 @@ struct user {
     }
     lcd.setCursor(8, 1);
     lcd.print(leftBitCount(this->str));
-    delay(100);
     lcd.setCursor(0, 1);
     lcd.print(millis() / 1000);
-    delay(200);
   }
 };
+void thumbsup() {
+  byte thumb1[8] = {B00100, B00011, B00100, B00011,
+                    B00100, B00011, B00010, B00001};
+  byte thumb2[8] = {B00000, B00000, B00000, B00000,
+                    B00000, B00000, B00000, B00011};
+  byte thumb3[8] = {B00000, B00000, B00000, B00000,
+                    B00000, B00000, B00001, B11110};
+  byte thumb4[8] = {B00000, B01100, B10010, B10010,
+                    B10001, B01000, B11110, B00000};
+  byte thumb5[8] = {B00010, B00010, B00010, B00010,
+                    B00010, B01110, B10000, B00000};
+  byte thumb6[8] = {B00000, B00000, B00000, B00000,
+                    B00000, B10000, B01000, B00110};
+  lcd.createChar(0, thumb1);
+  lcd.createChar(1, thumb2);
+  lcd.createChar(2, thumb3);
+  lcd.createChar(3, thumb4);
+  lcd.createChar(4, thumb5);
+  lcd.createChar(5, thumb6);
+  lcd.setCursor(4, 1);
+  lcd.write(byte(0));
+  lcd.setCursor(4, 0);
+  lcd.write(byte(1));
+  lcd.setCursor(5, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(5, 0);
+  lcd.write(byte(3));
+  lcd.setCursor(6, 1);
+  lcd.write(byte(4));
+  lcd.setCursor(6, 0);
+  lcd.write(byte(5));
+}
+
+void thumbdownA() {
+  byte thumb1[8] = {B00001, B00010, B00011, B00100,
+                    B00011, B00100, B00011, B00100};
+  byte thumb2[8] = {B00011, B00000, B00000, B00000,
+                    B00000, B00000, B00000, B00000};
+  byte thumb3[8] = {B11110, B00001, B00000, B00000,
+                    B00000, B00000, B00000, B00000};
+  byte thumb4[8] = {B00000, B11110, B01000, B10001,
+                    B10010, B10010, B01100, B00000};
+  byte thumb5[8] = {B00000, B10000, B01110, B00010,
+                    B00010, B00010, B00010, B00010};
+  byte thumb6[8] = {B00110, B01000, B10000, B00000,
+                    B00000, B00000, B00000, B00000};
+  lcd.createChar(0, thumb1);
+  lcd.createChar(1, thumb2);
+  lcd.createChar(2, thumb3);
+  lcd.createChar(3, thumb4);
+  lcd.createChar(4, thumb5);
+  lcd.createChar(5, thumb6);
+  lcd.setCursor(4, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(4, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(5, 0);
+  lcd.write(byte(2));
+  lcd.setCursor(5, 1);
+  lcd.write(byte(3));
+  lcd.setCursor(6, 0);
+  lcd.write(byte(4));
+  lcd.setCursor(6, 1);
+  lcd.write(byte(5));
+}
+
+void thumbdownB() {
+  byte thumb1[8] = {B00000, B00001, B00010, B00011,
+                    B00100, B00011, B00100, B00011};
+  byte thumb2[8] = {B00100, B00011, B00000, B00000,
+                    B00000, B00000, B00000, B00000};
+  byte thumb3[8] = {B00000, B11110, B00001, B00000,
+                    B00000, B00000, B00000, B00000};
+  byte thumb4[8] = {B00000, B00000, B11110, B01000,
+                    B10001, B10010, B10010, B01100};
+  byte thumb5[8] = {B00000, B00000, B10000, B01110,
+                    B00010, B00010, B00010, B00010};
+  byte thumb6[8] = {B00010, B00110, B01000, B10000,
+                    B00000, B00000, B00000, B00000};
+  lcd.createChar(0, thumb1);
+  lcd.createChar(1, thumb2);
+  lcd.createChar(2, thumb3);
+  lcd.createChar(3, thumb4);
+  lcd.createChar(4, thumb5);
+  lcd.createChar(5, thumb6);
+  lcd.setCursor(4, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(4, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(5, 0);
+  lcd.write(byte(2));
+  lcd.setCursor(5, 1);
+  lcd.write(byte(3));
+  lcd.setCursor(6, 0);
+  lcd.write(byte(4));
+  lcd.setCursor(6, 1);
+  lcd.write(byte(5));
+}
 
 user *usr = new user();
 
@@ -87,6 +182,18 @@ void setup() {
   lcd.clear();
 }
 
+void animate(unsigned x) {
+  thumbdownA();
+  delay(x);
+  lcd.clear();
+  thumbdownB();
+  delay(x);
+  lcd.clear();
+  thumbsup();
+  delay(x);
+  lcd.clear();
+}
+
 short handleir(decode_results results) {
   if (irrecv.decode(&results)) // have we received an IR signal?
   {
@@ -94,8 +201,8 @@ short handleir(decode_results results) {
       lcd.clear();
       lcd.setCursor(0, 0);
     case 0xFF629D:
-      lcd.print("Hello!"); // VOL+ button pressed
-      delay(1000);
+      animate(700); // VOL+ button pressed
+      delay(700);
       return 1;
     case 0xFFA857: // VOL- button pressed
       lcd.print("<SIGKILL..>");
@@ -104,28 +211,30 @@ short handleir(decode_results results) {
       delay(500);
       lcd.clear();
       return -1;
+    default: {
+      return 0;
+    }
     }
   }
 }
+
 void loop() {
   while (mySerial.isListening() && handleir(results) != -1) {
     // print the number of seconds since reset:
     irrecv.resume(); // receive the next value
-    usr->refreshbuffer();
+    unsigned char t = usr->refreshbuffer();
     lcd.setCursor(0, 0);
-    unsigned char t = usr->getbuf();
     if (t != UCHAR_MAX) {
       lcd.clear();
       usr->prntstr();
       delay(300);
     } else {
       lcd.clear();
-      lcd.print("<0xff> Awaiting..");
+      lcd.print("<0xf>");
       lcd.setCursor(0, 1);
-      lcd.print("!enter input!");
+      lcd.print("-Enter input-");
       delay(300);
     }
-    usr->wrapindex();
     lcd.clear();
   }
   exit(0);
