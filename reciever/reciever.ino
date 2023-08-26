@@ -220,11 +220,14 @@ short handleir(decode_results results) {
 
 void loop() {
 <<<<<<< HEAD
+<<<<<<< HEAD
   while (mySerial.isListening() && handleir(results) != -1) {
     // print the number of seconds since reset:
     irrecv.resume(); // receive the next value
     unsigned char t = usr->refreshbuffer();
 =======
+=======
+>>>>>>> efa62b6 (d)
   if (irrecv.decode(&results)) // have we received an IR signal?
   {
     switch (results.value)
@@ -267,7 +270,10 @@ void loop() {
     }
     lcd.clear();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> efa62b6 (d)
 
   } else {
     delete usr;
