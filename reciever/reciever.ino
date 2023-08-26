@@ -1,9 +1,9 @@
 
-#include "./BITS.c"
 #include "IRremote.h"
 #include "Stepper.h"
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
+#include "./BITS.c"
 /*----- Variables, Pins -----*/
 #define STEPS 32  // Number of steps per revolution of Internal shaft
 int Steps2Take;   // 2048 = 1 Revolution
@@ -219,10 +219,40 @@ short handleir(decode_results results) {
 }
 
 void loop() {
+<<<<<<< HEAD
   while (mySerial.isListening() && handleir(results) != -1) {
     // print the number of seconds since reset:
     irrecv.resume(); // receive the next value
     unsigned char t = usr->refreshbuffer();
+=======
+  if (irrecv.decode(&results)) // have we received an IR signal?
+  {
+    switch (results.value)
+    {
+    case 0xFFA857:                 // VOL+ button pressed
+      small_stepper.setSpeed(500); // Max seems to be 500
+      Steps2Take = 2048;           // Rotate CW
+      small_stepper.step(Steps2Take);
+      delay(2000);
+      break;
+    case 0xFF629D: // VOL- button pressed
+      small_stepper.setSpeed(500);
+      Steps2Take = -2048; // Rotate CCW
+      small_stepper.step(Steps2Take);
+      delay(2000);
+      break;
+    }
+
+    irrecv.resume(); // receive the next value
+    digitalWrite(8, LOW);
+    digitalWrite(9, LOW);
+    digitalWrite(10, LOW);
+    digitalWrite(11, LOW);
+  }
+  if (mySerial.isListening()) {
+    // print the number of seconds since reset:
+    usr->refresh();
+>>>>>>> efa62b6 (d)
     lcd.setCursor(0, 0);
     if (t != UCHAR_MAX) {
       lcd.clear();
@@ -236,6 +266,14 @@ void loop() {
       delay(300);
     }
     lcd.clear();
+<<<<<<< HEAD
+=======
+
+  } else {
+    delete usr;
+    usr = 0x0;
+    return;
+>>>>>>> efa62b6 (d)
   }
   exit(0);
 }
