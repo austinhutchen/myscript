@@ -40,7 +40,7 @@ public:
     while (k < size) {
       remainder = binaryval % 10;
       hexadecimalval = hexadecimalval + remainder * i;
-      i = i * 2;
+      i = i << 1;
       binaryval = binaryval / 10;
       k++;
     }
